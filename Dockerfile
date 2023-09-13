@@ -1,12 +1,23 @@
-FROM golang:latest
+#Build
 
-WORKDIR /usr/src/app
+FROM golang:1.19.13-alpine3.18 as builder
 
-COPY go.mod ./
-RUN go mod download
+WORKDIR /go/src/app
 
-COPY . .
+COPY ./app .
 
-RUN go build -o /go-main
+EXPOSE 8000
 
-ENTRYPOINT ["/go-main"]
+RUN go build -o /go-app main.go
+
+#Deploy
+
+FROM alpine:latest
+
+WORKDIR /
+
+COPY --from=builder /go-app /go-app
+
+EXPOSE 8000
+
+ENTRYPOINT ["/go-app"]
