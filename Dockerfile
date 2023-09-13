@@ -1,23 +1,19 @@
 #Build
 
-FROM golang:1.19.13-alpine3.18 as builder
+FROM golang:alpine as builder
 
-WORKDIR /go/src/app
+WORKDIR /crud
 
 COPY ./app .
-
-EXPOSE 8000
 
 RUN go build -o /go-app main.go
 
 #Deploy
 
-FROM alpine:latest
+FROM scratch
 
 WORKDIR /
 
 COPY --from=builder /go-app /go-app
-
-EXPOSE 8000
 
 ENTRYPOINT ["/go-app"]
